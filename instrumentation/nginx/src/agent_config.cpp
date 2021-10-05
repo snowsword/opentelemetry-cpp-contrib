@@ -2,6 +2,22 @@
 #include "toml.h"
 #include <algorithm>
 #include <stdlib.h>
+#include "ppconsul/kv.h"
+#include <stdio.h>
+#include <mutex>
+#include <iostream>
+#include <string>
+#include <chrono>
+#include <ctime>
+
+using ppconsul::Consul;
+using ppconsul::Consistency;
+using namespace ppconsul::kv;
+
+extern std::mutex m;
+extern auto lastUpdatedTime = std::chrono::system_clock::now();
+extern ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
+extern Kv kv(consul);
 
 struct ScopedTable {
   ScopedTable(toml_table_t* table) : table(table) {}
@@ -148,11 +164,29 @@ static bool SetupProcessor(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfi
   return true;
 }
 
+static double getSamplingRate(std::string cmdb){
+  std::lock_guard<std::mutex> lock(m);
+  auto cur = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsed_seconds = cur - lastUpdatedTime;
+  if(elapsed_seconds.count()>30.0){
+    lastUpdatedTime = cur;
+    return stod(kv.get("hot_config/coutrace/nginx/" + cmdb, "100"));
+  }
+}
+
 static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig* config) {
   toml_table_t* sampler = toml_table_in(root, "sampler");
 
   if (!sampler) {
     return true;
+  }
+  toml_datum_t toml_cmdb = toml_string_in(sampler, "cmdb");
+  std::string cmdb;
+  
+  if(!toml_cmdb.ok){
+    cmdb = "default";
+  } else {
+    cmdb = FromStringDatum(toml_cmdb);
   }
 
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
@@ -170,7 +204,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
       toml_datum_t ratio = toml_double_in(sampler, "ratio");
 
       if (ratio.ok) {
-        config->sampler.ratio = ratio.u.d;
+        config->sampler.ratio = getSamplingRate(cmdb);
       } else {
         ngx_log_error(NGX_LOG_ERR, log, 0, "TraceIdRatioBased requires a ratio to be specified");
         return false;

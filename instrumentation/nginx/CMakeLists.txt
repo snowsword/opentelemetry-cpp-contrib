@@ -8,7 +8,10 @@ find_package(protobuf REQUIRED)
 find_package(gRPC REQUIRED)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/nginx.cmake)
-
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(BUILD_TESTS OFF)
+set(BUILD_STATIC_LIB ON)
+add_subdirectory(ppconsul)
 add_library(otel_ngx_module SHARED
   src/nginx_config.cpp
   src/toml.c
@@ -21,7 +24,7 @@ add_library(otel_ngx_module SHARED
 )
 
 target_compile_options(otel_ngx_module
-  PRIVATE -Wall -Wextra
+  PRIVATE -Wall -Wextra -fPIC
 )
   
 install(TARGETS otel_ngx_module DESTINATION ".")
@@ -42,4 +45,5 @@ target_link_libraries(otel_ngx_module
   PRIVATE
   ${OPENTELEMETRY_CPP_LIBRARIES}
   gRPC::grpc++
+  ppconsul
 )
