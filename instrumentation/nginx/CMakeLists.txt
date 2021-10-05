@@ -34,7 +34,7 @@ set_target_properties(otel_ngx_module PROPERTIES
 )
 
 add_dependencies(otel_ngx_module project_nginx)
-add_executable(otel_ngx_module ...)
+
 
 target_include_directories(otel_ngx_module
   PRIVATE
