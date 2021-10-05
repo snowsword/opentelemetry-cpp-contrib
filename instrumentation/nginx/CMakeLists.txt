@@ -6,7 +6,10 @@ find_package(opentelemetry-cpp REQUIRED)
 find_package(Threads REQUIRED)
 find_package(protobuf REQUIRED)
 find_package(gRPC REQUIRED)
-find_package(ppconsul)
+
+set(BUILD_TESTS OFF)
+set(BUILD_STATIC_LIB ON)
+add_subdirectory(ppconsul)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/nginx.cmake)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
