@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include "ppconsul/kv.h"
 
+using ppconsul::Consul;
+using ppconsul::Consistency;
+using namespace ppconsul::kv;
+
 struct ScopedTable {
   ScopedTable(toml_table_t* table) : table(table) {}
   ~ScopedTable() { toml_free(table); }
