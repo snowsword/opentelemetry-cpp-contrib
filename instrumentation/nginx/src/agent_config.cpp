@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include "ppconsul/kv.h"
+#include <iostream>
 
 using ppconsul::Consul;
 using ppconsul::Consistency;
