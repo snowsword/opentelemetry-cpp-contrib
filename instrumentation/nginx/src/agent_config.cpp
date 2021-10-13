@@ -8,6 +8,9 @@ using ppconsul::Consul;
 using ppconsul::Consistency;
 using namespace ppconsul::kv;
 
+Consul consul;
+
+
 struct ScopedTable {
   ScopedTable(toml_table_t* table) : table(table) {}
   ~ScopedTable() { toml_free(table); }
