@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <stdlib.h>
 #include "ppconsul/kv.h"
-#include <iostream>
 
 using ppconsul::Consul;
 using ppconsul::Consistency;
@@ -163,7 +162,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
   if (!sampler) {
     return true;
   }
-  cout<< kv.get("hot_config/coutrace/nginx/default", "100");
+  kv.get("hot_config/coutrace/nginx/default", "100");
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
 
   if (samplerNameVal.ok) {
