@@ -14,9 +14,7 @@ using namespace std::chrono;
 
 extern ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
 extern Kv kv(consul);
-milliseconds cur = duration_cast< milliseconds >(
-    system_clock::now().time_since_epoch()
-);
+long lastUpdatedTime = curtime();
 
 struct ScopedTable {
   ScopedTable(toml_table_t* table) : table(table) {}
@@ -24,6 +22,12 @@ struct ScopedTable {
 
   toml_table_t* table;
 };
+
+long double curtime() {
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::system_clock::now().time_since_epoch()
+  ).count();
+}
 
 static std::string FromStringDatum(toml_datum_t datum) {
   std::string val{datum.u.s};
@@ -164,10 +168,12 @@ static bool SetupProcessor(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfi
 }
 
 static double getSamplingRate(std::string cmdb){
+    long cur = curtime();
 
-  
-    return stod(kv.get("hot_config/coutrace/nginx/" + cmdb, "100"));
-  
+    if((cur - lastUpdatedTime) > 1000 * 60 * 3){
+      return stod(kv.get("hot_config/coutrace/nginx/" + cmdb, "1"));
+    }
+    return -1.0;
 }
 
 static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig* config) {
