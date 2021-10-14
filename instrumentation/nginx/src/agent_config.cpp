@@ -174,7 +174,7 @@ static double getSamplingRate(std::string cmdb){
       lastUpdatedTime = cur;
       return stod(kv.get("hot_config/coutrace/nginx/" + cmdb, "1"));
     }
-    return -1.0;
+    return 1.0;
 }
 
 static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig* config) {
@@ -183,7 +183,16 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
   if (!sampler) {
     return true;
   }
-  kv.get("hot_config/coutrace/nginx/default", "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
+  toml_datum_t toml_cmdb = toml_string_in(sampler, "cmdb");
+  std::string cmdb;
+  
+  if(!toml_cmdb.ok){
+    cmdb = "default";
+  } else {
+    cmdb = FromStringDatum(toml_cmdb);
+  }
+  ngx_log_error(NGX_LOG_ERR, log, 0, "cmdb : " + cmdb);
+  //cout << "cmdb:" + cmdb << "\n";
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
 
   if (samplerNameVal.ok) {
@@ -199,7 +208,11 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
       toml_datum_t ratio = toml_double_in(sampler, "ratio");
 
       if (ratio.ok) {
-        config->sampler.ratio = ratio.u.d;
+        //config->sampler.ratio = ratio.u.d;
+        config->sampler.ratio = getSamplingRate(cmdb);
+        
+        ngx_log_error(NGX_LOG_ERR, log, 0, "ratio : " + to_string(config->sampler.ratio));
+      
       } else {
         ngx_log_error(NGX_LOG_ERR, log, 0, "TraceIdRatioBased requires a ratio to be specified");
         return false;
