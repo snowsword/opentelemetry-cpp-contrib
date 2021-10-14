@@ -12,8 +12,8 @@ using ppconsul::Consistency;
 using namespace ppconsul::kv;
 using namespace std::chrono;
 
-extern ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
-extern Kv kv(consul);
+ ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
+ Kv kv(consul);
 long lastUpdatedTime = 0;
 
 struct ScopedTable {
@@ -170,10 +170,10 @@ static bool SetupProcessor(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfi
 static double getSamplingRate(std::string cmdb){
     long cur = curtime();
     
-    if((cur - lastUpdatedTime) > 1000 * 60 * 3){
-      lastUpdatedTime = cur;
+    //if((cur - lastUpdatedTime) > 1000 * 60 * 3){
+      //lastUpdatedTime = cur;
       return stod(kv.get("hot_config/coutrace/nginx/" + cmdb, "1"));
-    }
+    //}
     return 1.0;
 }
 
