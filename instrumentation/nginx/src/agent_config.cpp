@@ -23,7 +23,7 @@ struct ScopedTable {
   toml_table_t* table;
 };
 
-long double curtime() {
+static long double curtime() {
   return std::chrono::duration_cast<std::chrono::milliseconds>(
     std::chrono::system_clock::now().time_since_epoch()
   ).count();
