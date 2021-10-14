@@ -191,8 +191,8 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
   } else {
     cmdb = FromStringDatum(toml_cmdb);
   }
-  ngx_log_error(NGX_LOG_ERR, log, 0, cmdb);
-  //cout << "cmdb:" + cmdb << "\n";
+  //ngx_log_error(NGX_LOG_ERR, log, 0, cmdb);
+  cout << cmdb << "\n";
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
 
   if (samplerNameVal.ok) {
@@ -211,7 +211,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
         //config->sampler.ratio = ratio.u.d;
         config->sampler.ratio = getSamplingRate(cmdb);
         
-        ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(config->sampler.ratio));
+        //ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(config->sampler.ratio));
       
       } else {
         ngx_log_error(NGX_LOG_ERR, log, 0, "TraceIdRatioBased requires a ratio to be specified");
