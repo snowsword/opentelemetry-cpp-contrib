@@ -8,6 +8,8 @@ using ppconsul::Consul;
 using ppconsul::Consistency;
 using namespace ppconsul::kv;
 
+extern ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
+extern Kv kv(consul);
 
 
 struct ScopedTable {
@@ -161,8 +163,6 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
   if (!sampler) {
     return true;
   }
-  ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
-  Kv kv(consul);
   kv.get("hot_config/coutrace/nginx/default", "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
 
