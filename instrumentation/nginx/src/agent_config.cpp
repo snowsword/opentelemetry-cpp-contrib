@@ -211,7 +211,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
         //config->sampler.ratio = ratio.u.d;
         config->sampler.ratio = getSamplingRate(cmdb);
         
-        ngx_log_error(NGX_LOG_ERR, log, 0, "ratio : " + to_string(config->sampler.ratio));
+        ngx_log_error(NGX_LOG_ERR, log, 0, "ratio : " + std::to_string(config->sampler.ratio));
       
       } else {
         ngx_log_error(NGX_LOG_ERR, log, 0, "TraceIdRatioBased requires a ratio to be specified");
