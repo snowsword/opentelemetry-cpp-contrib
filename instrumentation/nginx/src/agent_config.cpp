@@ -7,6 +7,7 @@
 #include <string>     // std::string, std::stod
 #include <chrono>
 
+
 using ppconsul::Consul;
 using ppconsul::Consistency;
 using namespace ppconsul::kv;
@@ -213,7 +214,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
         config->sampler.ratio = getSamplingRate(cmdb);
         std::cout<< config->sampler.ratio <<" config->sampler.ratio.\n";
         ngx_log_error(NGX_LOG_ERR, log, 0, "ratio");
-        ngx_log_error(NGX_LOG_ERR, log, 0, to_string(config->sampler.ratio).c_str());
+        ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(config->sampler.ratio).c_str());
       } else {
         ngx_log_error(NGX_LOG_ERR, log, 0, "TraceIdRatioBased requires a ratio to be specified");
         return false;
