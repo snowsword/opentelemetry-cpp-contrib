@@ -172,6 +172,8 @@ static double getSamplingRate(std::string cmdb){
     
     //if((cur - lastUpdatedTime) > 1000 * 60 * 3){
       //lastUpdatedTime = cur;
+      ngx_log_error(NGX_LOG_ERR, log, 0, "ratio");
+      ngx_log_error(NGX_LOG_ERR, log, 0, kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
       return stod(kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
     //}00
     //return 1.0;
@@ -210,7 +212,7 @@ ngx_log_error(NGX_LOG_ERR, log, 0, cmdb);
         //config->sampler.ratio = ratio.u.d;
         config->sampler.ratio = getSamplingRate(cmdb);
         std::cout<< config->sampler.ratio <<" config->sampler.ratio.\n";
-        ngx_log_error(NGX_LOG_ERR, log, 0, config->sampler.ratio);
+        
       } else {
         ngx_log_error(NGX_LOG_ERR, log, 0, "TraceIdRatioBased requires a ratio to be specified");
         return false;
