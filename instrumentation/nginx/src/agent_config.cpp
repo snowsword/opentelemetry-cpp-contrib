@@ -173,7 +173,7 @@ static double getSamplingRate(std::string cmdb){
     //if((cur - lastUpdatedTime) > 1000 * 60 * 3){
       //lastUpdatedTime = cur;
       ngx_log_error(NGX_LOG_ERR, log, 0, "ratio");
-      ngx_log_error(NGX_LOG_ERR, log, 0, kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
+      //ngx_log_error(NGX_LOG_ERR, log, 0, kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
       return stod(kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
     //}00
     //return 1.0;
@@ -195,7 +195,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
   }
   std::cout<< cmdb <<" cmdb.\n";
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
-ngx_log_error(NGX_LOG_ERR, log, 0, cmdb);
+   ngx_log_error(NGX_LOG_ERR, log, 0, cmdb.c_str());
   if (samplerNameVal.ok) {
     std::string samplerName = FromStringDatum(samplerNameVal);
 
