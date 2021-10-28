@@ -36,7 +36,7 @@ namespace sdktrace = opentelemetry::sdk::trace;
 namespace otlp = opentelemetry::exporter::otlp;
 
 constexpr char kOtelCtxVarPrefix[] = "otel_ctxvar_";
-
+static int count = 0;
 const ScriptAttributeDeclaration kDefaultScriptAttributes[] = {
   {"http.scheme", "$scheme"},
 };
@@ -115,11 +115,15 @@ nostd::string_view WithoutOtelVarPrefix(ngx_str_t value) {
 static ngx_int_t
 OtelGetTraceContextVar(ngx_http_request_t* req, ngx_http_variable_value_t* v, uintptr_t data) {
   TraceContext* traceContext = GetTraceContext(req);
-
+  
   if (traceContext == nullptr || !traceContext->request_span) {
-    ngx_log_error(
-      NGX_LOG_ERR, req->connection->log, 0,
-      "Unable to get trace context when expanding tracecontext var");
+    if(count == 10000){
+      ngx_log_error(
+        NGX_LOG_ERR, req->connection->log, 0,
+        "Unable to get trace context when expanding tracecontext var");
+        count=0;
+    }
+    count++;
     return NGX_OK;
   }
 

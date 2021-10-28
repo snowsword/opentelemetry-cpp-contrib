@@ -176,7 +176,7 @@ static double getSamplingRate(std::string cmdb){
       //ngx_log_error(NGX_LOG_ERR, log, 0, kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
     ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
     Kv kv(consul,kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
-    return stod(kv.get("hot_config/coutrace/nginx/default" , "1", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
+    return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
     //}00
     //return 1.0;
 }
