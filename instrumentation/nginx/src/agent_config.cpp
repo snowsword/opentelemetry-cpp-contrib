@@ -167,13 +167,16 @@ static bool SetupProcessor(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfi
   return true;
 }
 
-static double getSamplingRate(std::string cmdb){
+static double getSamplingRate(std::string cmdb, ngx_log_t* log){
     long cur = curtime();
     std::cout<<std::to_string(cur)<<" cur.\n";
     std::cout<<std::to_string(last_updated_time)<<" last_updated_time.\n";
     if((cur - last_updated_time) > 1000 * 60 * 3){
       last_updated_time = cur;
       std::cout<<" getSamplingRate.\n";
+      ngx_log_error(NGX_LOG_ERR, log, 0, "getSamplingRate");
+      ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(cur));
+      ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(last_updated_time));
       //ngx_log_error(NGX_LOG_ERR, log, 0, kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
       ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
       Kv kv(consul,kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
@@ -213,7 +216,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
 
       if (ratio.ok) {
         //config->sampler.ratio = ratio.u.d;
-        config->sampler.ratio = getSamplingRate(cmdb);
+        config->sampler.ratio = getSamplingRate(cmdb, log);
         config->sampler.cmdb = cmdb;
         std::cout<< config->sampler.ratio <<" config->sampler.ratio.\n";
         ngx_log_error(NGX_LOG_ERR, log, 0, "ratio");
