@@ -182,6 +182,7 @@ static double getSamplingRate(std::string cmdb, ngx_log_t* log){
       Kv kv(consul,kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
       return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
     }
+    return -1.0;
     //return 1.0;
 }
 
@@ -216,9 +217,12 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
 
       if (ratio.ok) {
         //config->sampler.ratio = ratio.u.d;
-        config->sampler.ratio = getSamplingRate(cmdb, log);
+        double ratio = getSamplingRate(cmdb, log);
+        if(ratio != -1.0){
+          config->sampler.ratio = ratio;
+          std::cout<< config->sampler.ratio <<" config->sampler.ratio.\n";
+        }
         config->sampler.cmdb = cmdb;
-        std::cout<< config->sampler.ratio <<" config->sampler.ratio.\n";
         ngx_log_error(NGX_LOG_ERR, log, 0, "ratio");
         ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(config->sampler.ratio).c_str());
       } else {
