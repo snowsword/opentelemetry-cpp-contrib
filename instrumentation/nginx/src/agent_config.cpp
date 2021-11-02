@@ -219,8 +219,11 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
         //config->sampler.ratio = ratio.u.d;
         double ratio = getSamplingRate(cmdb, log);
         if(ratio != -1.0){
+          long cur = curtime();
+          std::cout<<std::to_string(cur)<<" cur.\n";
+          std::cout<<std::to_string(last_updated_time)<<" last_updated_time.\n";
           config->sampler.ratio = ratio;
-          std::cout<< config->sampler.ratio <<" config->sampler.ratio.\n";
+          std::cout<< config->sampler.ratio <<" ratio in agent.\n";
         }
         config->sampler.cmdb = cmdb;
         ngx_log_error(NGX_LOG_ERR, log, 0, "ratio");
