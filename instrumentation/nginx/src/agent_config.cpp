@@ -175,8 +175,8 @@ static double getSamplingRate(std::string cmdb, ngx_log_t* log){
       last_updated_time = cur;
       std::cout<<" getSamplingRate.\n";
       ngx_log_error(NGX_LOG_ERR, log, 0, "getSamplingRate");
-      ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(cur));
-      ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(last_updated_time));
+      ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(cur).c_str());
+      ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(last_updated_time).c_str());
       //ngx_log_error(NGX_LOG_ERR, log, 0, kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
       ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
       Kv kv(consul,kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
