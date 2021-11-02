@@ -117,7 +117,7 @@ OtelGetTraceContextVar(ngx_http_request_t* req, ngx_http_variable_value_t* v, ui
   TraceContext* traceContext = GetTraceContext(req);
   
   if (traceContext == nullptr || !traceContext->request_span) {
-    if(count == 10000){
+    if(count == 10000) {
       ngx_log_error(
         NGX_LOG_ERR, req->connection->log, 0,
         "Unable to get trace context when expanding tracecontext var");
