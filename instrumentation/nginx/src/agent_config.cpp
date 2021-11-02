@@ -169,7 +169,8 @@ static bool SetupProcessor(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfi
 
 static double getSamplingRate(std::string cmdb){
     long cur = curtime();
-    
+    std::cout<<std::to_string(cur)<<" cur.\n";
+    std::cout<<std::to_string(last_updated_time)<<" last_updated_time.\n";
     if((cur - last_updated_time) > 1000 * 60 * 3){
       last_updated_time = cur;
       std::cout<<" getSamplingRate.\n";
