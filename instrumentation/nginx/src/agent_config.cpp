@@ -14,7 +14,7 @@ using namespace ppconsul::kv;
 using namespace std::chrono;
 
 
-long lastUpdatedTime = 0;
+long last_updated_time = 0;
 
 struct ScopedTable {
   ScopedTable(toml_table_t* table) : table(table) {}
@@ -170,8 +170,8 @@ static bool SetupProcessor(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfi
 static double getSamplingRate(std::string cmdb){
     long cur = curtime();
     
-    if((cur - lastUpdatedTime) > 1000 * 60 * 3){
-      lastUpdatedTime = cur;
+    if((cur - last_updated_time) > 1000 * 60 * 3){
+      last_updated_time = cur;
       std::cout<<" getSamplingRate.\n";
       //ngx_log_error(NGX_LOG_ERR, log, 0, kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
       ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
