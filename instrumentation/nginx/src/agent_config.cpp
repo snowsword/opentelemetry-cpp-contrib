@@ -177,8 +177,8 @@ static double getSamplingRate(std::string cmdb, std::string cur_env, ngx_log_t* 
       ngx_log_error(NGX_LOG_ERR, log, 0, "getSamplingRate");
       ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(cur).c_str());
       ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(last_updated_time).c_str());
-      std::string cur_token = env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6";
-      std::string cur_url = env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://10.213.211.43:8500";
+      std::string cur_token = cur_env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6";
+      std::string cur_url = cur_env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://10.213.211.43:8500";
       std::cout<< cur_token <<" cur_token in sample rate agent.\n";
       std::cout<< cur_url <<" cur_url in sample rate agent.\n";
       ppconsul::Consul consul(cur_url,kw::token=cur_token);
