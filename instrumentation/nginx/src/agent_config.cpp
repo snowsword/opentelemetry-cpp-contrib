@@ -167,7 +167,7 @@ static bool SetupProcessor(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfi
   return true;
 }
 
-static double getSamplingRate(std::string cmdb, std::string env, ngx_log_t* log){
+static double getSamplingRate(std::string cmdb, std::string cur_env, ngx_log_t* log){
     long cur = curtime();
     std::cout<<std::to_string(cur)<<" cur.\n";
     std::cout<<std::to_string(last_updated_time)<<" last_updated_time.\n";
@@ -177,10 +177,13 @@ static double getSamplingRate(std::string cmdb, std::string env, ngx_log_t* log)
       ngx_log_error(NGX_LOG_ERR, log, 0, "getSamplingRate");
       ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(cur).c_str());
       ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(last_updated_time).c_str());
-    
-      ppconsul::Consul consul(env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
-      Kv kv(consul,kw::token=env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6");
-      return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token=env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6"));
+      std::string cur_token = env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6";
+      std::string cur_url = env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://10.213.211.43:8500";
+      std::cout<< cur_token <<" cur_token in sample rate cc.\n";
+      std::cout<< cur_url <<" cur_url in sample rate cc.\n";
+      ppconsul::Consul consul(cur_url,kw::token=cur_token);
+      Kv kv(consul,kw::token=cur_token);
+      return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token=cur_token));
     }
     return -1.0;
     //return 1.0;
@@ -227,7 +230,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
 
       if (ratio.ok) {
         //config->sampler.ratio = ratio.u.d;
-        double ratio = getSamplingRate(cmdb, env, log);
+        double ratio = getSamplingRate(cmdb, cur_env, log);
         if(ratio != -1.0){
           long cur = curtime();
           std::cout<<std::to_string(cur)<<" cur.\n";
