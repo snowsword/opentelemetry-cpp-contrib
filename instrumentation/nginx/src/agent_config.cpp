@@ -212,7 +212,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
   std::cout<< env <<" env.\n";
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
    ngx_log_error(NGX_LOG_ERR, log, 0, cmdb.c_str());
-   ngx_log_error(NGX_LOG_ERR, log, 0, en.c_str());
+   ngx_log_error(NGX_LOG_ERR, log, 0, env.c_str());
   if (samplerNameVal.ok) {
     std::string samplerName = FromStringDatum(samplerNameVal);
 
