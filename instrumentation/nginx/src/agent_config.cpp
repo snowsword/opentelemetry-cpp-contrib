@@ -180,7 +180,7 @@ static double getSamplingRate(std::string cmdb, std::string env, ngx_log_t* log)
     
       ppconsul::Consul consul(env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
       Kv kv(consul,kw::token=env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6");
-      return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token=env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6");
+      return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token=env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6"));
     }
     return -1.0;
     //return 1.0;
