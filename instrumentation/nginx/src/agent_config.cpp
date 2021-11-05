@@ -195,7 +195,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
   toml_datum_t toml_cmdb = toml_string_in(sampler, "cmdb");
   toml_datum_t toml_env = toml_string_in(sampler, "env");
   std::string cmdb;
-  std::string env;
+  std::string cur_env;
   
   if(!toml_cmdb.ok){
     cmdb = "default";
@@ -203,16 +203,16 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
     cmdb = FromStringDatum(toml_cmdb);
   }
 
-    if(!toml_env.ok){
-    env = "dev";
+  if(!toml_env.ok){
+    cur_env = "dev";
   } else {
-    env = FromStringDatum(toml_env);
+    cur_env = FromStringDatum(toml_env);
   }
   std::cout<< cmdb <<" cmdb.\n";
-  std::cout<< env <<" env.\n";
+  std::cout<< cur_env <<" env.\n";
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
    ngx_log_error(NGX_LOG_ERR, log, 0, cmdb.c_str());
-   ngx_log_error(NGX_LOG_ERR, log, 0, env.c_str());
+   ngx_log_error(NGX_LOG_ERR, log, 0, cur_env.c_str());
   if (samplerNameVal.ok) {
     std::string samplerName = FromStringDatum(samplerNameVal);
 
@@ -236,7 +236,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
           std::cout<< config->sampler.ratio <<" ratio in agent.\n";
         }
         config->sampler.cmdb = cmdb;
-        config->sampler.env = env;
+        config->sampler.env = cur_env;
         ngx_log_error(NGX_LOG_ERR, log, 0, "ratio");
         ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(config->sampler.ratio).c_str());
       } else {
