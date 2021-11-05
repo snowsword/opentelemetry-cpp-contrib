@@ -656,7 +656,7 @@ CreateSampler(const OtelNgxAgentConfig* conf) {
         break;
       }
       case OtelSamplerTraceIdRatioBased: {
-        sampler = std::make_shared<sdktrace::TraceIdRatioBasedSampler>(conf->sampler.ratio, conf->sampler.cmdb);
+        sampler = std::make_shared<sdktrace::TraceIdRatioBasedSampler>(conf->sampler.ratio, conf->sampler.cmdb, conf->sampler.env);
         break;
       }
       default:
@@ -678,7 +678,7 @@ CreateSampler(const OtelNgxAgentConfig* conf) {
       break;
     }
     case OtelSamplerTraceIdRatioBased: {
-      sampler.reset(new sdktrace::TraceIdRatioBasedSampler(conf->sampler.ratio, conf->sampler.cmdb));
+      sampler.reset(new sdktrace::TraceIdRatioBasedSampler(conf->sampler.ratio, conf->sampler.cmdb, conf->sampler.env));
       break;
     }
     default:

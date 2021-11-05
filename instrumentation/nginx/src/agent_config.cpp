@@ -167,7 +167,7 @@ static bool SetupProcessor(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfi
   return true;
 }
 
-static double getSamplingRate(std::string cmdb, ngx_log_t* log){
+static double getSamplingRate(std::string cmdb, std::string env, ngx_log_t* log){
     long cur = curtime();
     std::cout<<std::to_string(cur)<<" cur.\n";
     std::cout<<std::to_string(last_updated_time)<<" last_updated_time.\n";
@@ -177,10 +177,10 @@ static double getSamplingRate(std::string cmdb, ngx_log_t* log){
       ngx_log_error(NGX_LOG_ERR, log, 0, "getSamplingRate");
       ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(cur).c_str());
       ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(last_updated_time).c_str());
-      //ngx_log_error(NGX_LOG_ERR, log, 0, kv.get("hot_config/coutrace/nginx/default" , "100", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
-      ppconsul::Consul consul("http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
-      Kv kv(consul,kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
-      return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6"));
+    
+      ppconsul::Consul consul(env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://10.213.211.43:8500",kw::token="eb438d90-4183-06d7-0095-8e24d723c9c6");
+      Kv kv(consul,kw::token=env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6");
+      return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token=env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6")
     }
     return -1.0;
     //return 1.0;
@@ -193,16 +193,26 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
     return true;
   }
   toml_datum_t toml_cmdb = toml_string_in(sampler, "cmdb");
+  toml_datum_t toml_env = toml_string_in(sampler, "env");
   std::string cmdb;
+  std::string env;
   
   if(!toml_cmdb.ok){
     cmdb = "default";
   } else {
     cmdb = FromStringDatum(toml_cmdb);
   }
+
+    if(!toml_env.ok){
+    env = "dev";
+  } else {
+    env = FromStringDatum(toml_env);
+  }
   std::cout<< cmdb <<" cmdb.\n";
+  std::cout<< env <<" env.\n";
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
    ngx_log_error(NGX_LOG_ERR, log, 0, cmdb.c_str());
+   ngx_log_error(NGX_LOG_ERR, log, 0, en.c_str());
   if (samplerNameVal.ok) {
     std::string samplerName = FromStringDatum(samplerNameVal);
 
@@ -217,7 +227,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
 
       if (ratio.ok) {
         //config->sampler.ratio = ratio.u.d;
-        double ratio = getSamplingRate(cmdb, log);
+        double ratio = getSamplingRate(cmdb, env, log);
         if(ratio != -1.0){
           long cur = curtime();
           std::cout<<std::to_string(cur)<<" cur.\n";
@@ -226,6 +236,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
           std::cout<< config->sampler.ratio <<" ratio in agent.\n";
         }
         config->sampler.cmdb = cmdb;
+        config->sampler.env = env;
         ngx_log_error(NGX_LOG_ERR, log, 0, "ratio");
         ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(config->sampler.ratio).c_str());
       } else {
