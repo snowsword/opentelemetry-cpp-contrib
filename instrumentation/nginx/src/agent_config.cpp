@@ -175,7 +175,7 @@ static double getSamplingRate(std::string cmdb, std::string cur_env, ngx_log_t* 
       last_updated_time = cur;
       std::cout<<" getSamplingRate.\n";
       std::string cur_token = cur_env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6";
-      std::string cur_url = cur_env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com:8500";
+      std::string cur_url = cur_env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://internal-ms-consul-alb-416054892.ap-northeast-2.elb.amazonaws.com:8500";
       ppconsul::Consul consul(cur_url,kw::token=cur_token);
       Kv kv(consul,kw::token=cur_token);
       return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token=cur_token));
