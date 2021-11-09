@@ -174,13 +174,8 @@ static double getSamplingRate(std::string cmdb, std::string cur_env, ngx_log_t* 
     if((cur - last_updated_time) > 1000 * 60 * 3){
       last_updated_time = cur;
       std::cout<<" getSamplingRate.\n";
-      ngx_log_error(NGX_LOG_ERR, log, 0, "getSamplingRate");
-      ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(cur).c_str());
-      ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(last_updated_time).c_str());
       std::string cur_token = cur_env=="prod"?"4e13740e-9d65-39eb-e0c3-473397658ea6":"eb438d90-4183-06d7-0095-8e24d723c9c6";
-      std::string cur_url = cur_env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://10.213.211.43:8500";
-      std::cout<< cur_token <<" cur_token in sample rate agent.\n";
-      std::cout<< cur_url <<" cur_url in sample rate agent.\n";
+      std::string cur_url = cur_env == "prod"?"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com/":"http://internal-ms-service-discovery-887102973.ap-northeast-2.elb.amazonaws.com:8500";
       ppconsul::Consul consul(cur_url,kw::token=cur_token);
       Kv kv(consul,kw::token=cur_token);
       return stod(kv.get("hot_config/coutrace/nginx/" + cmdb , "1", kw::token=cur_token));
@@ -211,11 +206,7 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
   } else {
     cur_env = FromStringDatum(toml_env);
   }
-  std::cout<< cmdb <<" cmdb.\n";
-  std::cout<< cur_env <<" env.\n";
   toml_datum_t samplerNameVal = toml_string_in(sampler, "name");
-   ngx_log_error(NGX_LOG_ERR, log, 0, cmdb.c_str());
-   ngx_log_error(NGX_LOG_ERR, log, 0, cur_env.c_str());
   if (samplerNameVal.ok) {
     std::string samplerName = FromStringDatum(samplerNameVal);
 
@@ -233,15 +224,10 @@ static bool SetupSampler(toml_table_t* root, ngx_log_t* log, OtelNgxAgentConfig*
         double ratio = getSamplingRate(cmdb, cur_env, log);
         if(ratio != -1.0){
           long cur = curtime();
-          std::cout<<std::to_string(cur)<<" cur.\n";
-          std::cout<<std::to_string(last_updated_time)<<" last_updated_time.\n";
           config->sampler.ratio = ratio;
-          std::cout<< config->sampler.ratio <<" ratio in agent.\n";
         }
         config->sampler.cmdb = cmdb;
         config->sampler.env = cur_env;
-        ngx_log_error(NGX_LOG_ERR, log, 0, "ratio");
-        ngx_log_error(NGX_LOG_ERR, log, 0, std::to_string(config->sampler.ratio).c_str());
       } else {
         ngx_log_error(NGX_LOG_ERR, log, 0, "TraceIdRatioBased requires a ratio to be specified");
         return false;
